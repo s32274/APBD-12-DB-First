@@ -35,7 +35,7 @@ public class TripsController : ControllerBase
     [HttpPost]
     [Route("{tripId}/clients")]
     public async Task<IActionResult> AssignClientToTripAsync(
-        CancellationToken cancellationToken, AssignClientDto assignClientDto
+        CancellationToken cancellationToken, [FromBody] AssignClientDto assignClientDto
         )
     {
         try

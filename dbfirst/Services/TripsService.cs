@@ -63,7 +63,7 @@ public class TripsService : ITripsService
     }
 
     public async Task<AssignClientDto> AssignClientToTripAsync(
-        CancellationToken cancellationToken, [FromQuery] AssignClientDto assignClientDto
+        CancellationToken cancellationToken, [FromBody] AssignClientDto assignClientDto
         )
     {
         // 1. Sprawdzenie, czy klient o podanym numerze PESEL istnieje 
@@ -97,7 +97,8 @@ public class TripsService : ITripsService
         }
 
         bool tripAlreadyBegan = await _apbdContext.Trips
-            .AnyAsync(t => t.DateFrom < DateTime.Now, cancellationToken);
+            .AnyAsync(t => 
+                t.IdTrip == assignClientDto.IdTrip && t.DateFrom < DateTime.Now, cancellationToken);
 
         if (tripAlreadyBegan)
         {
@@ -106,27 +107,28 @@ public class TripsService : ITripsService
         
         // 4.  PaymentDate może mieć wartość NULL, jeśli klient jeszcze nie zapłacił za wycieczkę 
         //      RegisteredAt w tabeli Client_Trip jest zgodne z czasem przyjęcia żądania na serwer
-        _apbdContext.Clients.Add(new Client
+        var client = new Client
         {
             FirstName = assignClientDto.FirstName,
             LastName = assignClientDto.LastName,
             Email = assignClientDto.Email,
             Telephone = assignClientDto.Telephone,
             Pesel = assignClientDto.Pesel
-        });
-
-        var clientId = await _apbdContext.Clients
-            .Where(c => c.Pesel == assignClientDto.Pesel)
-            .Select(c => c.IdClient)
-            .FirstOrDefaultAsync(cancellationToken);
-            
-        _apbdContext.ClientTrips.Add(new ClientTrip
+        };
+        
+        _apbdContext.Clients.Add(client);
+        await _apbdContext.SaveChangesAsync(cancellationToken);
+        
+        var clientTrip = new ClientTrip
         {
-            IdClient = clientId,
+            IdClient = client.IdClient,
             IdTrip = assignClientDto.IdTrip,
             RegisteredAt = DateTime.Now,
             PaymentDate = assignClientDto.PaymentDate
-        });
+        };
+
+        _apbdContext.ClientTrips.Add(clientTrip);
+        await _apbdContext.SaveChangesAsync(cancellationToken);
 
         return assignClientDto;
     }
