@@ -34,4 +34,9 @@
       <_ContentIncludedByDefault Remove="Tutorial9\obj\Tutorial9.csproj.nuget.dgspec.json" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="DAL\" />
+      <Folder Include="Models\" />
+    </ItemGroup>
+
 </Project>

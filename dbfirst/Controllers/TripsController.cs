@@ -1,7 +1,6 @@
 ﻿using db_first.Exceptions;
-using db_first.Models;
 using Microsoft.AspNetCore.Mvc;
-using Tutorial9.Services;
+using db_first.Services;
 
 namespace db_first.Controllers;
 
@@ -9,32 +8,24 @@ namespace db_first.Controllers;
 [Route("api/[controller]")]
 public class TripsController : ControllerBase
 {
-    private readonly IDbService _dbService;
+    private readonly ITripsService _tripsService;
 
-    public TripsController(IDbService dbService)
+    public TripsController(ITripsService tripsService)
     {
-        _dbService = dbService;
+        _tripsService = tripsService;
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetTripsAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetTripsAsync(CancellationToken cancellationToken, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         try
         {
-            var response = await _dbService.GetTripsAsync(page, pageSize);
+            var response = await _tripsService.GetTripsAsync(cancellationToken, page, pageSize);
             return Ok(response);
         }
         catch (NotFoundException e)
         {
             return NotFound(e.Message);
         }
-
-        // var response = new
-        // {
-            // pageNum = page,
-            // pageSize,
-            // allPages,
-            // trips
-        // };
     }
 }

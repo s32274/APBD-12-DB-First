@@ -6,7 +6,7 @@ public class TripsDto
     public int PageSize { get; set; }
     public int AllPages { get; set; }
 
-    public ICollection<TripDto> Trips = new List<TripDto>();
+    public ICollection<TripDto> Trips { get; set; } = new List<TripDto>();
 }
 
 public class TripDto 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace db_first.Models;
+﻿namespace db_first.Models;
 
 public partial class Country
 {

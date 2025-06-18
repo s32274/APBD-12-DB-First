@@ -1,27 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using db_first.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace db_first.Models;
+namespace db_first.DAL;
 
-public partial class APBDContext : DbContext
+public partial class ApbdContext : DbContext
 {
-    public APBDContext()
+    public ApbdContext()
     {
     }
 
-    public APBDContext(DbContextOptions<APBDContext> options)
+    public ApbdContext(DbContextOptions<ApbdContext> options)
         : base(options)
     {
     }
 
     public virtual DbSet<Client> Clients { get; set; }
 
-    public virtual DbSet<Client_Trip> Client_Trips { get; set; }
+    public virtual DbSet<ClientTrip> ClientTrips { get; set; }
 
     public virtual DbSet<Country> Countries { get; set; }
 
     public virtual DbSet<Trip> Trips { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=APBD;Trusted_Connection=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -38,7 +41,7 @@ public partial class APBDContext : DbContext
             entity.Property(e => e.Telephone).HasMaxLength(120);
         });
 
-        modelBuilder.Entity<Client_Trip>(entity =>
+        modelBuilder.Entity<ClientTrip>(entity =>
         {
             entity.HasKey(e => new { e.IdClient, e.IdTrip }).HasName("Client_Trip_pk");
 
@@ -47,12 +50,12 @@ public partial class APBDContext : DbContext
             entity.Property(e => e.PaymentDate).HasColumnType("datetime");
             entity.Property(e => e.RegisteredAt).HasColumnType("datetime");
 
-            entity.HasOne(d => d.IdClientNavigation).WithMany(p => p.Client_Trips)
+            entity.HasOne(d => d.IdClientNavigation).WithMany(p => p.ClientTrips)
                 .HasForeignKey(d => d.IdClient)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Table_5_Client");
 
-            entity.HasOne(d => d.IdTripNavigation).WithMany(p => p.Client_Trips)
+            entity.HasOne(d => d.IdTripNavigation).WithMany(p => p.ClientTrips)
                 .HasForeignKey(d => d.IdTrip)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Table_5_Trip");
@@ -68,7 +71,7 @@ public partial class APBDContext : DbContext
 
             entity.HasMany(d => d.IdTrips).WithMany(p => p.IdCountries)
                 .UsingEntity<Dictionary<string, object>>(
-                    "Country_Trip",
+                    "CountryTrip",
                     r => r.HasOne<Trip>().WithMany()
                         .HasForeignKey("IdTrip")
                         .OnDelete(DeleteBehavior.ClientSetNull)

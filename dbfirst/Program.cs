@@ -1,7 +1,6 @@
-using db_first.Models;
+using db_first.DAL;
 using db_first.Services;
 using Microsoft.EntityFrameworkCore;
-using Tutorial9.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // Rejestracja zaleznosci
-builder.Services.AddDbContext<APBDContext>(opt => 
+builder.Services.AddDbContext<ApbdContext>(opt => 
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionString");
     opt.UseSqlServer(connectionString);
@@ -18,11 +17,9 @@ builder.Services.AddDbContext<APBDContext>(opt =>
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddScoped<IDbService, DbService>();
+builder.Services.AddScoped<ITripsService, TripsService>();
 
 var app = builder.Build();
-
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
