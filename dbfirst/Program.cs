@@ -18,6 +18,7 @@ builder.Services.AddDbContext<ApbdContext>(opt =>
 builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<ITripsService, TripsService>();
+builder.Services.AddScoped<IClientsService, ClientsService>();
 
 var app = builder.Build();
 
