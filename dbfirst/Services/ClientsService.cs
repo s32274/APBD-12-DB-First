@@ -1,6 +1,5 @@
 using db_first.DAL;
 using db_first.Exceptions;
-using db_first.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace db_first.Services;

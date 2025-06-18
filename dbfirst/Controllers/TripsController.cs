@@ -1,4 +1,5 @@
-﻿using db_first.Exceptions;
+﻿using db_first.DTOs;
+using db_first.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using db_first.Services;
 
@@ -16,7 +17,9 @@ public class TripsController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetTripsAsync(CancellationToken cancellationToken, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetTripsAsync(
+        CancellationToken cancellationToken, [FromQuery] int page = 1, [FromQuery] int pageSize = 10
+        )
     {
         try
         {
@@ -26,6 +29,27 @@ public class TripsController : ControllerBase
         catch (NotFoundException e)
         {
             return NotFound(e.Message);
+        }
+    }
+
+    [HttpPost]
+    [Route("{tripId}/clients")]
+    public async Task<IActionResult> AssignClientToTripAsync(
+        CancellationToken cancellationToken, AssignClientDto assignClientDto
+        )
+    {
+        try
+        {
+            await _tripsService.AssignClientToTripAsync(cancellationToken, assignClientDto);
+            return Created();
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (ConflictException e)
+        {
+            return Conflict(e.Message);
         }
     }
 }
