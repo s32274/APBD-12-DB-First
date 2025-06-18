@@ -1,20 +1,18 @@
 using db_first.Models;
+using db_first.Services;
 using Microsoft.EntityFrameworkCore;
 using Tutorial9.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 
 // Rejestracja zaleznosci
 builder.Services.AddDbContext<APBDContext>(opt => 
 {
-    // var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionString");
-    // opt.UseSqlServer(connectionString);
-    
-    // nie dziala to
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionString");
+    opt.UseSqlServer(connectionString);
 });
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

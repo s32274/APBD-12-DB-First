@@ -1,9 +1,10 @@
 ﻿using db_first.DTOs;
 
-namespace Tutorial9.Services;
+namespace db_first.Repositories;
 
-public interface IDbService
+public interface ITripRepository
 {
     public Task<TripsDto> GetTripsAsync(int page, int pageSize);
+    // public Task<
 
 }
