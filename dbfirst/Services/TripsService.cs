@@ -8,18 +8,16 @@ namespace db_first.Services;
 
 public class TripsService : ITripsService
 {
-    private readonly string _connectionString;
+    private readonly ApbdContext _apbdContext;
     
-    public TripsService(IConfiguration configuration)
+    public TripsService(ApbdContext apbdContext)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnectionString") ?? string.Empty;
+        _apbdContext = apbdContext;
     }
     
     public async Task<TripsDto> GetTripsAsync(CancellationToken cancellationToken, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var context = new ApbdContext();
-
-        var totalTrips = await context.Trips.CountAsync(cancellationToken);
+        var totalTrips = await _apbdContext.Trips.CountAsync(cancellationToken);
         if (totalTrips == 0)
         {
             throw new NotFoundException("No trips were found.");
@@ -27,7 +25,7 @@ public class TripsService : ITripsService
         
         var allPages = (int)Math.Ceiling((double)totalTrips / pageSize);
         
-        var trips = await context.Trips
+        var trips = await _apbdContext.Trips
             .OrderByDescending(t => t.DateFrom)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
